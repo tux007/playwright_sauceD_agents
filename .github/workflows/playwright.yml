@@ -5,10 +5,13 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     env:
       SAUCEDEMO_BASE_URL: ${{ vars.SAUCEDEMO_BASE_URL }}
       SAUCEDEMO_USER_STANDARD: ${{ vars.SAUCEDEMO_USER_STANDARD }}
@@ -38,3 +41,28 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 14
+
+  deploy-report:
+    name: Deploy Playwright Report to Pages
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+      contents: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - name: Configure GitHub Pages
+      uses: actions/configure-pages@v5
+
+    - name: Upload Playwright report for Pages
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: playwright-report/
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
