@@ -6,7 +6,7 @@ import { loginAsStandardUser } from '../helpers/auth';
 
 test.describe('Inventory and Cart', () => {
   test('Inventory sorting works for all options', async ({ page }) => {
-    // 1. Open login page, login as standard_user with secret_sauce.
+    // 1. Open login page and login with configured standard credentials.
     await loginAsStandardUser(page);
     await expect(page.locator('[data-test="title"]')).toHaveText('Products');
     await expect(page.locator('[data-test="active-option"]')).toHaveText('Name (A to Z)');

@@ -2,7 +2,7 @@
 
 ## Application Overview
 
-Comprehensive test plan for saucedemo.com covering authentication, product browsing, cart management, checkout, and session/logout behavior. Tests are independent, start from a blank state, and include both happy paths and negative validation scenarios. User personas covered: standard_user, locked_out_user, problem_user, performance_glitch_user, error_user, visual_user. Password for all users: secret_sauce.
+Comprehensive test plan for Sauce Demo covering authentication, product browsing, cart management, checkout, and session/logout behavior. Tests are independent, start from a blank state, and include both happy paths and negative validation scenarios. User personas and credentials are provided via environment variables.
 
 ## Quick Stability Checklist
 
@@ -25,26 +25,26 @@ Use this checklist when creating or refactoring specs.
 
 **Seed:** `seed.spec.ts`
 
-#### 1.1. Login succeeds for standard_user
+#### 1.1. Login succeeds for configured standard account
 
 **File:** `tests/auth/login-standard-user.spec.ts`
 
 **Steps:**
-  1. Open https://www.saucedemo.com/ from a fresh browser context.
+  1. Open the configured base URL from a fresh browser context.
     - expect: Login page is visible with username, password, and Login button.
-  2. Enter username standard_user and password secret_sauce, then click Login.
+  2. Enter configured standard username and password, then click Login.
     - expect: User is redirected to /inventory.html.
     - expect: Products header is visible.
     - expect: No login error message is shown.
 
-#### 1.2. Login fails for locked_out_user
+#### 1.2. Login fails for configured locked account
 
 **File:** `tests/auth/login-locked-out-user.spec.ts`
 
 **Steps:**
-  1. Open https://www.saucedemo.com/ from a fresh browser context.
+  1. Open the configured base URL from a fresh browser context.
     - expect: Login page is visible.
-  2. Enter username locked_out_user and password secret_sauce, then click Login.
+  2. Enter configured locked username and password, then click Login.
     - expect: User remains on login page.
     - expect: Error message shows locked-out text: Epic sadface: Sorry, this user has been locked out.
 
@@ -53,9 +53,9 @@ Use this checklist when creating or refactoring specs.
 **File:** `tests/auth/login-invalid-password.spec.ts`
 
 **Steps:**
-  1. Open https://www.saucedemo.com/ from a fresh browser context.
+  1. Open the configured base URL from a fresh browser context.
     - expect: Login page is visible.
-  2. Enter username standard_user and an invalid password, then click Login.
+  2. Enter configured standard username and configured invalid password, then click Login.
     - expect: User remains on login page.
     - expect: Error message indicates username/password mismatch.
 
@@ -64,7 +64,7 @@ Use this checklist when creating or refactoring specs.
 **File:** `tests/auth/login-required-fields.spec.ts`
 
 **Steps:**
-  1. Open https://www.saucedemo.com/ from a fresh browser context.
+  1. Open the configured base URL from a fresh browser context.
     - expect: Login page is visible.
   2. Click Login with both fields empty.
     - expect: Validation error appears for missing username.
@@ -80,7 +80,7 @@ Use this checklist when creating or refactoring specs.
 **File:** `tests/cart/add-single-item.spec.ts`
 
 **Steps:**
-  1. Open login page, login as standard_user with secret_sauce.
+  1. Open login page and login with configured standard credentials.
     - expect: User lands on inventory page.
   2. Click Add to cart for Sauce Labs Backpack.
     - expect: Button changes to Remove.
@@ -93,7 +93,7 @@ Use this checklist when creating or refactoring specs.
 **File:** `tests/cart/add-multiple-remove-one.spec.ts`
 
 **Steps:**
-  1. Open login page, login as standard_user with secret_sauce.
+  1. Open login page and login with configured standard credentials.
     - expect: Inventory page is visible.
   2. Add two different products to cart.
     - expect: Cart badge count is 2.
@@ -107,7 +107,7 @@ Use this checklist when creating or refactoring specs.
 **File:** `tests/cart/continue-shopping.spec.ts`
 
 **Steps:**
-  1. Open login page, login as standard_user with secret_sauce, add at least one item, open cart.
+  1. Open login page, login with configured standard credentials, add at least one item, open cart.
     - expect: Cart page is visible with at least one item.
   2. Click Continue Shopping.
     - expect: User returns to inventory page.
@@ -118,7 +118,7 @@ Use this checklist when creating or refactoring specs.
 **File:** `tests/inventory/sorting.spec.ts`
 
 **Steps:**
-  1. Open login page, login as standard_user with secret_sauce.
+  1. Open login page and login with configured standard credentials.
     - expect: Inventory page is visible with sort dropdown defaulting to Name (A to Z).
   2. Select Name (Z to A).
     - expect: Product order changes to descending by name.
@@ -132,7 +132,7 @@ Use this checklist when creating or refactoring specs.
 **File:** `tests/inventory/product-detail-navigation.spec.ts`
 
 **Steps:**
-  1. Open login page, login as standard_user with secret_sauce.
+  1. Open login page and login with configured standard credentials.
     - expect: Inventory page is visible.
   2. Click a product name or image to open detail page.
     - expect: Product detail page is shown with matching product info.
@@ -148,7 +148,7 @@ Use this checklist when creating or refactoring specs.
 **File:** `tests/checkout/checkout-happy-path.spec.ts`
 
 **Steps:**
-  1. Open login page, login as standard_user with secret_sauce.
+  1. Open login page and login with configured standard credentials.
     - expect: Inventory page is visible.
   2. Add one item to cart and open cart.
     - expect: Cart contains selected item.
@@ -162,7 +162,7 @@ Use this checklist when creating or refactoring specs.
 **File:** `tests/checkout/checkout-validation-required-fields.spec.ts`
 
 **Steps:**
-  1. Open login page, login as standard_user with secret_sauce, add one item, and open checkout step one.
+  1. Open login page, login with configured standard credentials, add one item, and open checkout step one.
     - expect: Checkout your information form is visible.
   2. Click Continue with all fields empty.
     - expect: Error appears for missing First Name.
@@ -176,7 +176,7 @@ Use this checklist when creating or refactoring specs.
 **File:** `tests/checkout/checkout-cancel-step-one.spec.ts`
 
 **Steps:**
-  1. Open login page, login as standard_user with secret_sauce, add item, open checkout step one.
+  1. Open login page, login with configured standard credentials, add item, open checkout step one.
     - expect: Checkout step one is visible.
   2. Click Cancel.
     - expect: User returns to cart page.
@@ -187,7 +187,7 @@ Use this checklist when creating or refactoring specs.
 **File:** `tests/checkout/checkout-cancel-overview.spec.ts`
 
 **Steps:**
-  1. Open login page, login as standard_user with secret_sauce, add item, proceed to checkout overview.
+  1. Open login page, login with configured standard credentials, add item, proceed to checkout overview.
     - expect: Checkout overview is visible.
   2. Click Cancel on overview.
     - expect: User is redirected to inventory page.
@@ -198,7 +198,7 @@ Use this checklist when creating or refactoring specs.
 **File:** `tests/session/logout-and-protected-route.spec.ts`
 
 **Steps:**
-  1. Open login page, login as standard_user with secret_sauce.
+  1. Open login page and login with configured standard credentials.
     - expect: Inventory page is visible.
   2. Open menu and click Logout.
     - expect: User returns to login page.
@@ -210,7 +210,7 @@ Use this checklist when creating or refactoring specs.
 **File:** `tests/session/reset-app-state.spec.ts`
 
 **Steps:**
-  1. Open login page, login as standard_user with secret_sauce.
+  1. Open login page and login with configured standard credentials.
     - expect: Inventory page is visible.
   2. Add two products to cart.
     - expect: Cart badge shows 2.
@@ -223,12 +223,12 @@ Use this checklist when creating or refactoring specs.
 
 **Seed:** `seed.spec.ts`
 
-#### 4.1. problem_user shows stable last-name validation defect on checkout step one
+#### 4.1. Problem persona shows stable last-name validation defect on checkout step one
 
 **File:** `tests/persona/problem-user-flow.spec.ts`
 
 **Steps:**
-  1. Open login page, login as problem_user with secret_sauce.
+  1. Open login page and login as configured problem persona.
     - expect: User reaches inventory page.
   2. Add one item, open cart, and open checkout step one.
     - expect: Checkout information form is visible.
@@ -236,21 +236,21 @@ Use this checklist when creating or refactoring specs.
     - expect: User remains on checkout step one.
     - expect: Validation error indicates Last Name is required.
 
-#### 4.2. performance_glitch_user login and inventory load within acceptable threshold
+#### 4.2. Performance persona login and inventory load within acceptable threshold
 
 **File:** `tests/persona/performance-glitch-user.spec.ts`
 
 **Steps:**
-  1. Open login page and measure time from clicking Login (performance_glitch_user) to inventory visible.
+  1. Open login page and measure time from clicking Login for configured performance persona to inventory visible.
     - expect: Inventory eventually loads.
     - expect: Measured duration is recorded for trend tracking and compared to agreed threshold (e.g., <= 10s in CI baseline).
 
-#### 4.3. error_user and visual_user smoke checks
+#### 4.3. Error and visual persona smoke checks
 
 **File:** `tests/persona/error-visual-user-smoke.spec.ts`
 
 **Steps:**
-  1. Run separate subchecks for error_user and visual_user in isolated fresh contexts.
+  1. Run separate subchecks for configured error and visual personas in isolated fresh contexts.
     - expect: Both users can login (unless environment behavior changes).
     - expect: Core elements are present: menu, product list, cart icon.
   2. For each user, add one item and open cart.

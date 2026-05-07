@@ -9,6 +9,17 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      SAUCEDEMO_BASE_URL: ${{ vars.SAUCEDEMO_BASE_URL }}
+      SAUCEDEMO_USER_STANDARD: ${{ vars.SAUCEDEMO_USER_STANDARD }}
+      SAUCEDEMO_USER_LOCKED_OUT: ${{ vars.SAUCEDEMO_USER_LOCKED_OUT }}
+      SAUCEDEMO_USER_PROBLEM: ${{ vars.SAUCEDEMO_USER_PROBLEM }}
+      SAUCEDEMO_USER_PERFORMANCE_GLITCH: ${{ vars.SAUCEDEMO_USER_PERFORMANCE_GLITCH }}
+      SAUCEDEMO_USER_ERROR: ${{ vars.SAUCEDEMO_USER_ERROR }}
+      SAUCEDEMO_USER_VISUAL: ${{ vars.SAUCEDEMO_USER_VISUAL }}
+      SAUCEDEMO_PASSWORD: ${{ secrets.SAUCEDEMO_PASSWORD }}
+      SAUCEDEMO_PASSWORD_INVALID: ${{ secrets.SAUCEDEMO_PASSWORD_INVALID }}
+      SAUCEDEMO_PERF_THRESHOLD_MS: ${{ vars.SAUCEDEMO_PERF_THRESHOLD_MS }}
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4

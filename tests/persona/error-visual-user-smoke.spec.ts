@@ -3,16 +3,17 @@
 
 import { test, expect, type Browser } from '@playwright/test';
 import { SAUCE_DEMO_URL } from '../helpers/auth';
+import { SAUCEDEMO_PASSWORD, SAUCEDEMO_USERS } from '../helpers/env';
 import { PRODUCTS } from '../helpers/test-data';
 
-async function runPersonaSmokeSubcheck(browser: Browser, username: 'error_user' | 'visual_user'): Promise<void> {
+async function runPersonaSmokeSubcheck(browser: Browser, username: string): Promise<void> {
   const context = await browser.newContext();
   const page = await context.newPage();
 
-  // 1. Run separate subchecks for error_user and visual_user in isolated fresh contexts.
+  // 1. Run separate subchecks in isolated fresh contexts.
   await page.goto(SAUCE_DEMO_URL);
   await page.locator('[data-test="username"]').fill(username);
-  await page.locator('[data-test="password"]').fill('secret_sauce');
+  await page.locator('[data-test="password"]').fill(SAUCEDEMO_PASSWORD);
   await page.locator('[data-test="login-button"]').click();
 
   await expect(page).toHaveURL(/\/inventory\.html$/);
@@ -31,8 +32,8 @@ async function runPersonaSmokeSubcheck(browser: Browser, username: 'error_user' 
 }
 
 test.describe('Persona-Specific Stability Checks', () => {
-  test('error_user and visual_user smoke checks', async ({ browser }) => {
-    await runPersonaSmokeSubcheck(browser, 'error_user');
-    await runPersonaSmokeSubcheck(browser, 'visual_user');
+  test('error and visual persona smoke checks', async ({ browser }) => {
+    await runPersonaSmokeSubcheck(browser, SAUCEDEMO_USERS.error);
+    await runPersonaSmokeSubcheck(browser, SAUCEDEMO_USERS.visual);
   });
 });

@@ -2,13 +2,15 @@
 // seed: tests/seed.spec.ts
 
 import { test, expect } from '@playwright/test';
+import { openLoginPage } from '../helpers/auth';
+import { SAUCEDEMO_PASSWORD, SAUCEDEMO_USERS } from '../helpers/env';
 
 test.describe('Persona-Specific Stability Checks', () => {
-  test('performance_glitch_user login and inventory load within acceptable threshold', async ({ page }) => {
-    // 1. Open login page and measure time from clicking Login (performance_glitch_user) to inventory visible.
-    await page.goto('https://www.saucedemo.com/');
-    await page.locator('[data-test="username"]').fill('performance_glitch_user');
-    await page.locator('[data-test="password"]').fill('secret_sauce');
+  test('performance persona login and inventory load within acceptable threshold', async ({ page }) => {
+    // 1. Open login page and measure time from clicking Login to inventory visible.
+    await openLoginPage(page);
+    await page.locator('[data-test="username"]').fill(SAUCEDEMO_USERS.performanceGlitch);
+    await page.locator('[data-test="password"]').fill(SAUCEDEMO_PASSWORD);
 
     const loginStart = Date.now();
     await page.locator('[data-test="login-button"]').click();

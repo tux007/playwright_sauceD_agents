@@ -7,7 +7,7 @@ import { PRODUCTS } from '../helpers/test-data';
 
 test.describe('Inventory and Cart', () => {
   test('Continue Shopping navigates back to inventory', async ({ page }) => {
-    // 1. Open login page, login as standard_user with secret_sauce, add at least one item, open cart.
+    // 1. Open login page, login with configured standard credentials, add at least one item, open cart.
     await loginAsStandardUser(page);
     await page.locator(`[data-test="add-to-cart-${PRODUCTS.backpack.slug}"]`).click();
     await page.locator('[data-test="shopping-cart-link"]').click();

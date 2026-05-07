@@ -2,7 +2,7 @@
 // seed: tests/seed.spec.ts
 
 import { test, expect, type Page } from '@playwright/test';
-import { loginAsUser } from '../helpers/auth';
+import { loginAsProblemUser } from '../helpers/auth';
 import { CHECKOUT_DATA, PRODUCTS } from '../helpers/test-data';
 
 async function fillCheckoutInfoUntilStable(page: Page): Promise<void> {
@@ -24,9 +24,9 @@ async function fillCheckoutInfoUntilStable(page: Page): Promise<void> {
 }
 
 test.describe('Persona-Specific Stability Checks', () => {
-  test('problem_user shows stable last-name validation defect on checkout step one', async ({ page }) => {
-    // 1. Open login page, login as problem_user with secret_sauce.
-    await loginAsUser(page, 'problem_user');
+  test('problem persona shows stable last-name validation defect on checkout step one', async ({ page }) => {
+    // 1. Open login page and login as configured problem persona.
+    await loginAsProblemUser(page);
     await expect(page.locator('[data-test="title"]')).toHaveText('Products');
 
     // 2. Add one item, open cart, proceed through checkout and complete order.
@@ -37,7 +37,7 @@ test.describe('Persona-Specific Stability Checks', () => {
     await expect(page.locator('[data-test="postalCode"]')).toHaveValue(CHECKOUT_DATA.problemUser.postalCode);
     await page.locator('[data-test="continue"]').click();
 
-    // problem_user is expected to stay on step one and show the validation error consistently.
+    // The configured problem persona is expected to stay on step one and show the validation error consistently.
     await expect(page).toHaveURL(/\/checkout-step-one\.html$/);
     await expect(page.locator('[data-test="error"]')).toContainText('Last Name is required');
   });

@@ -6,7 +6,7 @@ import { loginAsStandardUser } from '../helpers/auth';
 
 test.describe('Checkout and Session', () => {
   test('Cancel on checkout overview returns to inventory', async ({ page }) => {
-    // 1. Open login page, login as standard_user with secret_sauce, add item, proceed to checkout overview.
+    // 1. Open login page, login with configured standard credentials, add item, proceed to checkout overview.
     await loginAsStandardUser(page);
     await page.locator('[data-test="add-to-cart-sauce-labs-backpack"]').click();
     await page.locator('[data-test="shopping-cart-link"]').click();

@@ -7,7 +7,7 @@ import { PRODUCTS } from '../helpers/test-data';
 
 test.describe('Checkout and Session', () => {
   test('Reset App State clears cart badge and item state', async ({ page }) => {
-    // 1. Open login page, login as standard_user with secret_sauce.
+    // 1. Open login page and login with configured standard credentials.
     await loginAsStandardUser(page);
     await expect(page.locator('[data-test="title"]')).toHaveText('Products');
 
