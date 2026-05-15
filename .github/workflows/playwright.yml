@@ -56,13 +56,25 @@ jobs:
       if: ${{ !cancelled() }}
       id: xray-auth
       run: |
-        TOKEN=$(curl -s -X POST \
+        RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
           "https://xray.cloud.eu.getxray.app/api/v2/authenticate" \
           -H "Content-Type: application/json" \
-          -d "{\"client_id\":\"${{ secrets.XRAY_CLIENT_ID }}\",\"client_secret\":\"${{ secrets.XRAY_CLIENT_SECRET }}\"}" \
-          | tr -d '"')
+          -d "{\"client_id\":\"${{ secrets.XRAY_CLIENT_ID }}\",\"client_secret\":\"${{ secrets.XRAY_CLIENT_SECRET }}\"}")
+        
+        HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+        TOKEN=$(echo "$RESPONSE" | sed '$d' | tr -d '"')
+        
+        echo "Xray auth HTTP status: $HTTP_CODE"
+        
+        if [ "$HTTP_CODE" != "200" ] || [ -z "$TOKEN" ]; then
+          echo "::error::Xray authentication failed (HTTP $HTTP_CODE)"
+          echo "Response: $(echo "$RESPONSE" | sed '$d')"
+          exit 1
+        fi
+        
         echo "::add-mask::$TOKEN"
         echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+        echo "Xray authentication successful"
 
     - name: Import results to Xray
       if: ${{ !cancelled() && steps.xray-auth.outputs.token != '' }}
