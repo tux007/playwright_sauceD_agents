@@ -47,3 +47,4 @@ out/
 # Misc
 *.cache
 .playwright-mcp/
+results/junit-report.xml
