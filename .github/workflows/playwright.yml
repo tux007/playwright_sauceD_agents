@@ -1,6 +1,11 @@
 name: Playwright Tests
 on:
   workflow_dispatch:
+    inputs:
+      test_plan_key:
+        description: 'Xray Test Plan Key'
+        required: false
+        default: 'RQT-1'
   push:
     branches: [ main ]
   pull_request:
@@ -79,6 +84,7 @@ jobs:
     - name: Import results to Xray
       if: ${{ !cancelled() && steps.xray-auth.outputs.token != '' }}
       run: |
+        TEST_PLAN_KEY="${{ github.event.inputs.test_plan_key || 'RQT-1' }}"
         curl -s -X POST \
           "https://eu.xray.cloud.getxray.app/api/v2/import/execution/junit?projectKey=RQT&testPlanKey=RQT-1" \
           -H "Content-Type: application/xml" \
