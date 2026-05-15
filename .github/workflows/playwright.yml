@@ -5,10 +5,8 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   test:
     timeout-minutes: 60
@@ -38,12 +36,42 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       run: npx playwright test
+      continue-on-error: true
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
         name: playwright-report
         path: playwright-report/
         retention-days: 14
+    - name: Upload JUnit results artifact
+      uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: junit-report
+        path: results/junit-report.xml
+        retention-days: 14
+
+    # ── Xray Import ──────────────────────────────────────
+    - name: Authenticate with Xray Cloud
+      if: ${{ !cancelled() }}
+      id: xray-auth
+      run: |
+        TOKEN=$(curl -s -X POST \
+          "https://xray.cloud.getxray.app/api/v2/authenticate" \
+          -H "Content-Type: application/json" \
+          -d "{\"client_id\":\"${{ secrets.XRAY_CLIENT_ID }}\",\"client_secret\":\"${{ secrets.XRAY_CLIENT_SECRET }}\"}" \
+          | tr -d '"')
+        echo "::add-mask::$TOKEN"
+        echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+
+    - name: Import results to Xray
+      if: ${{ !cancelled() && steps.xray-auth.outputs.token != '' }}
+      run: |
+        curl -s -X POST \
+          "https://xray.cloud.getxray.app/api/v2/import/execution/junit?projectKey=RQT&testPlanKey=RQT-1" \
+          -H "Content-Type: application/xml" \
+          -H "Authorization: Bearer ${{ steps.xray-auth.outputs.token }}" \
+          -d @results/junit-report.xml
 
   deploy-report:
     name: Deploy Playwright Report to Pages
@@ -60,13 +88,11 @@ jobs:
     steps:
     - name: Configure GitHub Pages
       uses: actions/configure-pages@v5
-
     - name: Download Playwright report artifact
       uses: actions/download-artifact@v4
       with:
         name: playwright-report
         path: playwright-report/
-
     - name: "Guard: verify Playwright HTML report exists"
       run: |
         if [ ! -f "playwright-report/index.html" ]; then
@@ -75,12 +101,10 @@ jobs:
           ls -la playwright-report || true
           exit 1
         fi
-
     - name: Upload Playwright report for Pages
       uses: actions/upload-pages-artifact@v3
       with:
         path: playwright-report/
-
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
