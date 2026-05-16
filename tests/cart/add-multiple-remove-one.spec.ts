@@ -21,6 +21,6 @@ test.describe('Inventory and Cart', () => {
 
     await expect(page.locator('[data-test="item-4-title-link"]')).toHaveCount(0);
     await expect(page.locator('[data-test="item-0-title-link"]')).toHaveText('Sauce Labs Bike Light');
-    await expect(page.locator('[data-test="shopping-cart-badge"]')).toHaveText('2');
+    await expect(page.locator('[data-test="shopping-cart-badge"]')).toHaveText('1');
   });
 });
