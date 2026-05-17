@@ -1,5 +1,7 @@
 name: Playwright Tests
 on:
+  schedule:
+    - cron: '30 13 * * *'
   workflow_dispatch:
     inputs:
       test_plan_key:
