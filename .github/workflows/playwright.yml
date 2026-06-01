@@ -51,15 +51,24 @@ jobs:
     - name: Install Playwright Browsers
       if: steps.playwright-cache.outputs.cache-hit != 'true'
       run: |
+        MAX_ATTEMPTS=3
         for browser in chromium firefox webkit; do
           echo "Installing $browser..."
-          for attempt in 1 2 3; do
-            timeout 300 npx playwright install $browser && break
-            if [ $attempt -lt 3 ]; then
+          installed=false
+          for attempt in $(seq 1 $MAX_ATTEMPTS); do
+            if timeout 300 npx playwright install $browser; then
+              installed=true
+              break
+            fi
+            if [ $attempt -lt $MAX_ATTEMPTS ]; then
               echo "Attempt $attempt failed for $browser, retrying in 10s..."
               sleep 10
             fi
           done
+          if [ "$installed" != "true" ]; then
+            echo "::error::Failed to install $browser after $MAX_ATTEMPTS attempts"
+            exit 1
+          fi
         done
     - name: Run Playwright tests
       run: npx playwright test
