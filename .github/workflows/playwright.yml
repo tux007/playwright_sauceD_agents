@@ -1,8 +1,5 @@
 name: Playwright Tests
 on:
-  schedule:
-    - cron: '0 6 * * *'   # 08:00 Europe/Zurich CEST (UTC+2, summer)
-    - cron: '0 15 * * *'  # 16:00 Europe/Zurich CET  (UTC+1, winter)
   workflow_dispatch:
     inputs:
       test_plan_key:
@@ -32,6 +29,7 @@ jobs:
       SAUCEDEMO_PASSWORD: ${{ secrets.SAUCEDEMO_PASSWORD }}
       SAUCEDEMO_PASSWORD_INVALID: ${{ secrets.SAUCEDEMO_PASSWORD_INVALID }}
       SAUCEDEMO_PERF_THRESHOLD_MS: ${{ vars.SAUCEDEMO_PERF_THRESHOLD_MS }}
+      XRAY_IMPORT_ENABLED: 'false'
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -89,7 +87,7 @@ jobs:
 
     # ── Xray Import ──────────────────────────────────────
     - name: Authenticate with Xray Cloud
-      if: ${{ !cancelled() }}
+      if: ${{ !cancelled() && env.XRAY_IMPORT_ENABLED == 'true' }}
       id: xray-auth
       run: |
         RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
@@ -113,7 +111,7 @@ jobs:
         echo "Xray authentication successful"
 
     - name: Import results to Xray
-      if: ${{ !cancelled() && steps.xray-auth.outputs.token != '' }}
+      if: ${{ !cancelled() && env.XRAY_IMPORT_ENABLED == 'true' && steps.xray-auth.outputs.token != '' }}
       run: |
         TEST_PLAN_KEY="${{ github.event.inputs.test_plan_key || 'RQT-1' }}"
         curl -s -X POST \
@@ -124,7 +122,7 @@ jobs:
 
   deploy-report:
     name: Deploy Playwright Report to Pages
-    if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     needs: test
     runs-on: ubuntu-latest
     permissions:
